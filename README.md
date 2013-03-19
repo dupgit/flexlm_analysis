@@ -7,6 +7,7 @@ Script to analyse flexlm log files.
 Usage
 =====
 
+```
 NAME
   flexlm_analysis.py
 
@@ -31,3 +32,4 @@ OPTIONS
 
 EXAMPLES
   flexlm_analysis.py origin.log
+```
