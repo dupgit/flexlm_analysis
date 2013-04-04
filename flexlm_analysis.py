@@ -37,6 +37,7 @@ class Options:
     files = []   # file list that we will read looking for entries
     out = 'None' # Character string to choose wich output we want:
                  # stat or gnuplot
+    image = 'image.png' # Image name to be included in the gnuplot script
 
     def __init__(self):
         """
@@ -45,6 +46,7 @@ class Options:
         self.opts = ''
         self.files = []
         self.out = 'None'
+        self.image = 'image.png'
 
         self.parse_command_line()
 
@@ -80,10 +82,10 @@ class Options:
           flexlm_analysis.py
 
         SYNOPSIS
-          flexlm_analysis.py [OPTIONS] FILES
+          flexlm_analysis.py -s|-g [OPTIONS] FILES
 
         DESCRIPTION
-          Script to analyse flexlm log files.
+          Script to analyse flexlm log files. Option -s or -g is mandatory.
 
         OPTIONS
 
@@ -98,8 +100,11 @@ class Options:
             Outputs a gnuplot script that can be executed later to
             generate an image about the usage
 
+          -i, --image FILENAME
+            Tells the image name the gnuplot script may generate
+
         EXAMPLES
-          flexlm_analysis.py origin.log
+          flexlm_analysis.py -s origin.log
 
         """)
 
@@ -111,8 +116,8 @@ class Options:
     def parse_command_line(self):
         """Parses command line's options and arguments
         """
-        short_options = 'hsg'
-        long_options = ['help', 'stat', 'gnuplot']
+        short_options = 'hsgi:'
+        long_options = ['help', 'stat', 'gnuplot', 'image=']
 
         # Read options and arguments
         try:
@@ -133,6 +138,9 @@ class Options:
 
             if opt in ('-g', '--gnuplot'):
                 self.out = 'gnuplot'
+
+            if opt in ('-i', '--image'):
+                self.image = arg
 
         # If there is still args on the command line then it should be some filenames
         if self.args != '':
@@ -306,8 +314,10 @@ def output_stats(nb_days, result_list):
 
 def do_gnuplot_stats(result_list):
     """Here we do some gnuplot style stats in order to draw an image of the
-    evolution of the use of the modules
+    evolution of the use of the modules.
 
+    event_list contains the date, time and number of used licenses in reverse
+    chronological order.
     """
 
     module_list = []
@@ -332,7 +342,7 @@ def do_gnuplot_stats(result_list):
             event_list.insert(0, (date, time, use))  # Prepending to the list
 
         else:
-            (some_date, some_time, use) = event_list[0] # retrieving only the 'use' value
+            (some_date, some_time, use) = event_list[0] # retrieving the last 'use' value to update it
 
             if state.lower() == 'out':
                 use = use + 1
@@ -348,7 +358,7 @@ def do_gnuplot_stats(result_list):
 # End of do_some_stats function
 
 
-def print_gnuplot(nb_days, stats, module_list):
+def print_gnuplot(image_name, nb_days, stats, module_list):
     """Writing the data files and the gnuplot script
     """
 
@@ -363,14 +373,14 @@ def print_gnuplot(nb_days, stats, module_list):
     gnuplot_file.write('set format x "%Y/%m/%d %H:%M:%S"\n')
     gnuplot_file.write('set xlabel "Date"\n')
     gnuplot_file.write('set ylabel "Nombre d\'exécutions"\n')
-    gnuplot_file.write('set output "image.png"\n')
+    gnuplot_file.write('set output "%s"\n' % image_name)
     gnuplot_file.write('set style line 1 lw 1\n')
     gnuplot_file.write('set terminal png size %d,1024\n' % (24*nb_days))
     gnuplot_file.write('plot ')
 
     first_line = True
 
-    # Generating data files
+    # Generating data files. Their names are based upon the module name being analysed
     for m in module_list:
         dat_filename = '%s.dat' % m
         dat_file = open(dat_filename, 'w')
@@ -391,12 +401,12 @@ def print_gnuplot(nb_days, stats, module_list):
         dat_file.close()
 
 
-def output_gnuplot(nb_days, result_list):
+def output_gnuplot(image_name, nb_days, result_list):
     """Does some stats and outputs them into some data files and a gnuplot script
     """
 
     (stats, module_list) = do_gnuplot_stats(result_list)
-    print_gnuplot(nb_days, stats, module_list)
+    print_gnuplot(image_name, nb_days, stats, module_list)
 
 # End of output_gnuplot
 
@@ -413,8 +423,9 @@ def main():
     if my_opts.out == 'stat':
         output_stats(nb_days, result_list)
 
-    elif my_opts.out == 'gnuplot':
-        output_gnuplot(nb_days, result_list)
+    # We do not want to generate an image if the number of day usage is less than one !
+    elif my_opts.out == 'gnuplot' and nb_days > 0:
+        output_gnuplot(my_opts.image, nb_days, result_list)
 
 if __name__=="__main__" :
     main()
