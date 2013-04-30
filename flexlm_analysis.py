@@ -372,7 +372,7 @@ def print_gnuplot(image_name, nb_days, stats, module_list):
     gnuplot_file.write('set timefmt "%Y/%m/%d %H:%M:%S"\n')
     gnuplot_file.write('set format x "%Y/%m/%d %H:%M:%S"\n')
     gnuplot_file.write('set xlabel "Date"\n')
-    gnuplot_file.write('set ylabel "Nombre d\'exécutions"\n')
+    gnuplot_file.write('set ylabel "Nombre d\'executions"\n')
     gnuplot_file.write('set output "%s"\n' % image_name)
     gnuplot_file.write('set style line 1 lw 1\n')
     gnuplot_file.write('set terminal png size %d,1024\n' % (24*nb_days))
@@ -420,12 +420,14 @@ def main():
 
     (nb_days, result_list) = read_files(my_opts.files)
 
-    if my_opts.out == 'stat':
-        output_stats(nb_days, result_list)
+    if len(result_list) > 1 :
 
-    # We do not want to generate an image if the number of day usage is less than one !
-    elif my_opts.out == 'gnuplot' and nb_days > 0:
-        output_gnuplot(my_opts.image, nb_days, result_list)
+        if my_opts.out == 'stat':
+            output_stats(nb_days, result_list)
+
+        # We do not want to generate an image if the number of day usage is less than one !
+        elif my_opts.out == 'gnuplot' and nb_days > 0:
+            output_gnuplot(my_opts.image, nb_days, result_list)
 
 if __name__=="__main__" :
     main()
