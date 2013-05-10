@@ -100,7 +100,7 @@ class Options:
             Outputs a gnuplot script that can be executed later to
             generate an image about the usage
 
-          -i, --image FILENAME
+          -i, --image=FILENAME
             Tells the image name the gnuplot script may generate
 
         EXAMPLES
