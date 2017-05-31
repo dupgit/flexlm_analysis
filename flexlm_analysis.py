@@ -53,7 +53,7 @@ class Options:
 
     def transform_to_int(self, opt, arg):
         """transform 'arg' argument from the command line to an int where
-        possible
+        possible.
 
         >>> my_opts = Options()
         >>> my_opts.transform_to_int('', '2')
@@ -114,7 +114,7 @@ class Options:
 
 
     def parse_command_line(self):
-        """Parses command line's options and arguments
+        """Parses command line's options and arguments.
         """
         short_options = 'hsgi:'
         long_options = ['help', 'stat', 'gnuplot', 'image=']
@@ -158,7 +158,7 @@ class Options:
 
 def read_files(files):
     """Matches lines in the files and returns the number of days in use and a
-    list of the following tuple : (date, time, state, module, user, machine)
+    list of the following tuple : (date, time, state, module, user, machine).
     """
 
 
@@ -226,9 +226,9 @@ def read_files(files):
 def do_some_stats(result_list):
     """Here we do some stats and fill a dictionnary of stats that will
     contain all stats per module ie one tuple containing the following :
-    (max_users, min_users, max_day, nb_users, total_use, nb_days)
+    (max_users, min_users, max_day, nb_users, total_use, nb_days).
 
-    Returns a dictionnary of statistics and a list of module that has stats
+    Returns a dictionnary of statistics and a list of module that has stats.
     """
 
     old_date = 'XXXXXXX'  # A value that does not exists
@@ -280,7 +280,7 @@ def do_some_stats(result_list):
 
 
 def print_stats(nb_days, stats, name_list):
-    """Prints the stats module per module to the screen
+    """Prints the stats module per module to the screen.
     """
 
     for name in name_list:
@@ -303,7 +303,7 @@ def print_stats(nb_days, stats, name_list):
 
 
 def output_stats(nb_days, result_list):
-    """Does some stats on the result list and prints them on the screen
+    """Does some stats on the result list and prints them on the screen.
     """
 
     (stats, name_list) = do_some_stats(result_list)
@@ -359,7 +359,7 @@ def do_gnuplot_stats(result_list):
 
 
 def print_gnuplot(image_name, nb_days, stats, module_list):
-    """Writing the data files and the gnuplot script
+    """Writing the data files and the gnuplot script.
     """
 
     # Generating the gnuplot script
@@ -403,6 +403,7 @@ def print_gnuplot(image_name, nb_days, stats, module_list):
 
 def output_gnuplot(image_name, nb_days, result_list):
     """Does some stats and outputs them into some data files and a gnuplot script
+    that one might run later.
     """
 
     (stats, module_list) = do_gnuplot_stats(result_list)
@@ -412,7 +413,7 @@ def output_gnuplot(image_name, nb_days, result_list):
 
 
 def main():
-    """Here we choose what to do upon the command line's options
+    """Here we choose what to do upon the command line's options.
     """
 
     # Parsing options
