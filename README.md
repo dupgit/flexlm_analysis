@@ -4,6 +4,7 @@ flexlm_analysis.py
 Script to analyse flexlm log files.
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dupgit/flexlm_analysis/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dupgit/flexlm_analysis/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dupgit/flexlm_analysis/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dupgit/flexlm_analysis/?branch=master)
 
 
 Usage
