@@ -20,10 +20,10 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-import os
-import sys
-import getopt
-import shutil
+#import os
+#import sys
+#import getopt
+#import shutil
 import argparse
 import re
 import gzip
@@ -84,7 +84,7 @@ class Options:
         self.files = self.options.files
 
     # End of get_command_line_arguments() function
-# End of Conf class
+# End of Options class
 
 
 
@@ -352,8 +352,6 @@ def main():
 
     # Parsing options
     my_opts = Options()
-
-    print("%s - %s" % (my_opts.files, my_opts.out))
 
     (nb_days, result_list) = read_files(my_opts.files)
 
