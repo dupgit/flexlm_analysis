@@ -24,136 +24,70 @@ import os
 import sys
 import getopt
 import shutil
+import argparse
 import re
 import gzip
 
 
 class Options:
-    """A class to manage command line options
+    """
+    A class to manage command line options
     """
 
-    args = ''    # Command line arguments
-    opts = ''    # Command line options
-    files = []   # file list that we will read looking for entries
-    out = 'None' # Character string to choose wich output we want:
-                 # stat or gnuplot
+    files = []          # file list that we will read looking for entries
+    out = 'None'        # Character string to choose which output we want:
+                        # stat or gnuplot
     image = 'image.png' # Image name to be included in the gnuplot script
+    description = {}
+    options = None
 
     def __init__(self):
         """
+        Inits the class
         """
-        self.args = ''
-        self.opts = ''
         self.files = []
         self.out = 'None'
-        self.image = 'image.png'
+        self.image ='image.png'
+        self.description = {}
+        self.options = None
 
-        self.parse_command_line()
+        self._get_command_line_arguments()
+
+    # End of init() function
 
 
-    def transform_to_int(self, opt, arg):
-        """transform 'arg' argument from the command line to an int where
-        possible.
-
-        >>> my_opts = Options()
-        >>> my_opts.transform_to_int('', '2')
-        2
+    def _get_command_line_arguments(self):
         """
-
-        try :
-            arg = int(arg)
-        except:
-            print("Error (%s), NUM must be an integer. Here '%s'" % (str(opt), str(arg)))
-            sys.exit(2)
-
-        if arg > 0:
-            return arg
-        else:
-            print("Error (%s), NUM must be positive. Here %d" % (str(opt), arg))
-            sys.exit(2)
-
-    # End of transform_to_int function
-
-
-    # Help message for main program
-    def usage(self, exit_value):
-        print("""
-        NAME
-          flexlm_analysis.py
-
-        SYNOPSIS
-          flexlm_analysis.py -s|-g [OPTIONS] FILES
-
-        DESCRIPTION
-          Script to analyse flexlm log files. Option -s or -g is mandatory.
-
-        OPTIONS
-
-          -h, --help
-            This help
-
-          -s, --stat
-            Outputs some stats about the use of the modules as stated
-            in the log files
-
-          -g, --gnuplot
-            Outputs a gnuplot script that can be executed later to
-            generate an image about the usage
-
-          -i, --image=FILENAME
-            Tells the image name the gnuplot script may generate
-
-        EXAMPLES
-          flexlm_analysis.py -s origin.log
-
-        """)
-
-        sys.exit(exit_value)
-
-    # End of function usage()
-
-
-    def parse_command_line(self):
-        """Parses command line's options and arguments.
+        Defines and gets all the arguments for the command line using
+        argparse module. This function is called in the __init__ function
+        of this class.
         """
-        short_options = 'hsgi:'
-        long_options = ['help', 'stat', 'gnuplot', 'image=']
+        str_version = 'flexlm_analysis'
 
-        # Read options and arguments
-        try:
-            self.opts, self.args = getopt.getopt(sys.argv[1:], short_options, long_options)
+        parser = argparse.ArgumentParser(description='Script to analyse flexlm log files.', version=str_version)
 
-        except getopt.GetoptError, err: # print help information and exit with error :
-            print("%s" % str(err))
-            self.usage(2)
+        parser.add_argument('-i', '--image', action='store', dest='image', help='Tells the image name the gnuplot script may generate', default='image.png')
+        parser.add_argument('-g', '--gnuplot', action='store_true', dest='gnuplot', help='Outputs a gnuplot script that can be executed later to generate an image about the usage', default=False)
+        parser.add_argument('-s', '--stats', action='store_true', dest='stats', help='Outputs some stats about the use of the modules as stated in the log file', default=False)
+        parser.add_argument('files', metavar='Files', type=str, nargs='+', help='Log files to be parsed')
+    
 
-        # Values as requested by the command line
-        for opt, arg in self.opts:
+        self.options = parser.parse_args()
+        
+        if self.options.gnuplot:
+            self.out = 'gnuplot'
 
-            if opt in ('-h', '--help'):
-                self.usage(0)
+        if self.options.stats:
+            self.out = 'stat'
 
-            if opt in ('-s', '--stat'):
-                self.out = 'stat'
+        self.image = self.options.image
+        self.files = self.options.files
 
-            if opt in ('-g', '--gnuplot'):
-                self.out = 'gnuplot'
+    # End of get_command_line_arguments() function
+# End of Conf class
 
-            if opt in ('-i', '--image'):
-                self.image = arg
 
-        # If there is still args on the command line then it should be some filenames
-        if self.args != '':
-            self.files = self.args
-        else:
-            self.usage(2)
 
-        if self.files == [] or self.out == 'None':
-            self.usage(2)
-
-    # End of parse command line
-
-# End of Options class
 
 
 def read_files(files):
@@ -418,6 +352,8 @@ def main():
 
     # Parsing options
     my_opts = Options()
+
+    print("%s - %s" % (my_opts.files, my_opts.out))
 
     (nb_days, result_list) = read_files(my_opts.files)
 
