@@ -157,6 +157,22 @@ def read_files(files):
 # End of read_files function
 
 
+def get_stats_from_module(stats, module_list, module):
+    """Returns the tuple corresponding to the module 
+    from stats dictionary and takes care to create one
+    if its a new module.
+    """
+
+
+    if module not in module_list:
+        module_list.append(module)
+        stats[module] = (0, 999999999999, '', -1, 0, 0)
+
+    return stats[module]
+
+# End of get_stats_from_module() function
+
+
 def do_some_stats(result_list):
     """Here we do some stats and fill a dictionnary of stats that will
     contain all stats per module ie one tuple containing the following :
@@ -174,13 +190,8 @@ def do_some_stats(result_list):
     for data in result_list:
         (date, time, state, module, user, machine) = data
 
-        if module not in module_list:
-            # Initialiasing the new module with default values
-            module_list.append(module)
-            stats[module] = (0, 999999999999, '', -1, 0, 0)
-
-        # Retreiving the values for a specific module
-        (max_users, min_users, max_day, nb_users, total_use, nb_days) = stats[module]
+        # Retrieving usage values for a specific module
+        (max_users, min_users, max_day, nb_users, total_use, nb_days) = get_stats_from_module(stats, module_list, module)
 
         # Calculating statistics
         if date != old_date:
