@@ -273,6 +273,38 @@ def output_stats(nb_days, result_list):
 # End of output_stats
 
 
+def init_use_upon_state(state):
+    """Inits use variable upon the first state we
+    encounter. We normally should only encounter
+    a OUT state but it might not be the case in
+    real life so a IN state fixes use at 0.
+    """
+
+    if state.lower() == 'out':
+        use = 1
+    elif state.lower == 'in':
+        use = 0
+
+    return use
+
+# End of init_use_upon_state() function
+
+
+def update_use_value_upon_state(state, use):
+    """updates use variable upon state content:
+    OUT adds a usage an IN removes a usage.
+    """
+
+    if state.lower() == 'out':
+        use = use + 1
+    elif state.lower() == 'in':
+        use = use - 1
+
+    return use
+
+# End of update_use_value_upon_state() function
+
+
 def do_gnuplot_stats(result_list):
     """Here we do some gnuplot style stats in order to draw an image of the
     evolution of the use of the modules.
@@ -294,23 +326,13 @@ def do_gnuplot_stats(result_list):
         event_list = stats[module]
 
         if event_list == []:
-            if state.lower() == 'out':
-                use = 1
-            elif state.lower == 'in':
-                use = 0
-
-            event_list.insert(0, (date, time, use))  # Prepending to the list
+            use = init_use_upon_state(state)
 
         else:
             (some_date, some_time, use) = event_list[0]  # retrieving the last 'use' value to update it
+            use = update_use_value_upon_state(state, use)
 
-            if state.lower() == 'out':
-                use = use + 1
-            elif state.lower() == 'in':
-                use = use - 1
-
-            event_list.insert(0, (date, time, use))  # Prepending to the list
-
+        event_list.insert(0, (date, time, use))  # Prepending to the list
         stats[module] = event_list
 
     return (stats, module_list)
