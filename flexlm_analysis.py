@@ -31,10 +31,10 @@ class Options:
     A class to manage command line options
     """
 
-    files = []          # file list that we will read looking for entries
-    out = 'None'        # Character string to choose which output we want:
-                        # stat or gnuplot
-    image = 'image.png' # Image name to be included in the gnuplot script
+    files = []           # file list that we will read looking for entries
+    out = 'None'         # Character string to choose which output we want:
+                         # 'stat' or 'gnuplot'
+    image = 'image.png'  # Image name to be included in the gnuplot script
     description = {}
     options = None
 
@@ -44,7 +44,7 @@ class Options:
         """
         self.files = []
         self.out = 'None'
-        self.image ='image.png'
+        self.image = 'image.png'
         self.description = {}
         self.options = None
 
@@ -67,10 +67,9 @@ class Options:
         parser.add_argument('-g', '--gnuplot', action='store_true', dest='gnuplot', help='Outputs a gnuplot script that can be executed later to generate an image about the usage', default=False)
         parser.add_argument('-s', '--stats', action='store_true', dest='stats', help='Outputs some stats about the use of the modules as stated in the log file', default=False)
         parser.add_argument('files', metavar='Files', type=str, nargs='+', help='Log files to be parsed')
-    
 
         self.options = parser.parse_args()
-        
+
         if self.options.gnuplot:
             self.out = 'gnuplot'
 
@@ -84,14 +83,10 @@ class Options:
 # End of Options class
 
 
-
-
-
 def read_files(files):
     """Matches lines in the files and returns the number of days in use and a
     list of the following tuple : (date, time, state, module, user, machine).
     """
-
 
 # 8:21:20 (lmgrd) FLEXnet Licensing (v10.8.0 build 18869) started on MACHINE (IBM PC) (7/30/2012)
 
@@ -115,7 +110,7 @@ def read_files(files):
         for line in inode:
             # Looking for some patterns in the file
 
-            if date_matched == False:
+            if date_matched is False:
                 # Look for the line below to guess the starting date (here : 2012/7/30)
                 # 8:21:20 (lmgrd) FLEXnet Licensing (v10.8.0 build 18869) started on MACHINE (IBM PC) (7/30/2012)
                 res = re.match(r'\ ?\d+:\d+:\d+ .+ \((\d+)/(\d+)/(\d+)\)', line)
@@ -155,11 +150,10 @@ def read_files(files):
 
 
 def get_stats_from_module(stats, module_list, module):
-    """Returns the tuple corresponding to the module 
+    """Returns the tuple corresponding to the module
     from stats dictionary and takes care to create one
     if its a new module.
     """
-
 
     if module not in module_list:
         module_list.append(module)
@@ -210,7 +204,7 @@ def do_some_stats(result_list):
             max_users = nb_users
             max_day = date
 
-        if nb_users > 0  and nb_users < min_users:
+        if nb_users > 0 and nb_users < min_users:
             min_users = nb_users
 
         # Saving the new values
@@ -268,7 +262,6 @@ def do_gnuplot_stats(result_list):
     for data in result_list:
         (date, time, state, module, user, machine) = data
 
-
         if module not in module_list:
             module_list.append(module)
             stats[module] = []   # Creating an empty list of tuples for this new module.
@@ -284,14 +277,14 @@ def do_gnuplot_stats(result_list):
             event_list.insert(0, (date, time, use))  # Prepending to the list
 
         else:
-            (some_date, some_time, use) = event_list[0] # retrieving the last 'use' value to update it
+            (some_date, some_time, use) = event_list[0]  # retrieving the last 'use' value to update it
 
             if state.lower() == 'out':
                 use = use + 1
             elif state.lower() == 'in':
                 use = use - 1
 
-            event_list.insert(0, (date, time, use)) # Prepending to the list
+            event_list.insert(0, (date, time, use))  # Prepending to the list
 
         stats[module] = event_list
 
@@ -327,7 +320,7 @@ def print_gnuplot(image_name, nb_days, stats, module_list):
         dat_filename = '%s.dat' % m
         dat_file = open(dat_filename, 'w')
 
-        if first_line == True:
+        if first_line:
             gnuplot_file.write('"%s" using 1:3 title "%s" with lines' % (dat_filename, m))
             first_line = False
         else:
@@ -342,6 +335,8 @@ def print_gnuplot(image_name, nb_days, stats, module_list):
 
         dat_file.close()
 
+# End of print_gnuplot() function
+
 
 def output_gnuplot(image_name, nb_days, result_list):
     """Does some stats and outputs them into some data files and a gnuplot script
@@ -351,7 +346,7 @@ def output_gnuplot(image_name, nb_days, result_list):
     (stats, module_list) = do_gnuplot_stats(result_list)
     print_gnuplot(image_name, nb_days, stats, module_list)
 
-# End of output_gnuplot
+# End of output_gnuplot() function
 
 
 def main():
@@ -363,7 +358,7 @@ def main():
 
     (nb_days, result_list) = read_files(my_opts.files)
 
-    if len(result_list) > 1 :
+    if len(result_list) > 1:
 
         if my_opts.out == 'stat':
             output_stats(nb_days, result_list)
@@ -372,5 +367,5 @@ def main():
         elif my_opts.out == 'gnuplot' and nb_days > 0:
             output_gnuplot(my_opts.image, nb_days, result_list)
 
-if __name__=="__main__" :
+if __name__ == "__main__":
     main()
