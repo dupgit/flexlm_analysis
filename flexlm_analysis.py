@@ -146,7 +146,7 @@ def read_files(files):
     # list containing all tuples
     return (nb_days, result_list)
 
-# End of read_files function
+# End of read_files() function
 
 
 def get_stats_from_module(stats, module_list, module):
@@ -162,6 +162,42 @@ def get_stats_from_module(stats, module_list, module):
     return stats[module]
 
 # End of get_stats_from_module() function
+
+
+def count_users_upon_state(state, nb_users, total_use):
+    """Counts the maximum number of users and the number
+    of usage made upon the state of the license IN or OUT
+    Returns updated nb_users and total_use in a tuple
+    """
+
+    if state.lower() == 'out':
+        nb_users = nb_users + 1
+        total_use = total_use + 1
+
+    elif state.lower() == 'in':
+        nb_users = nb_users - 1
+
+    return (nb_users, total_use)
+
+# End of count_users_upon_state() function
+
+
+def get_min_max_users(nb_users, min_users, max_users, date, max_day):
+    """Gets the maximum and the minimum users usage
+    Returns updated (or not) min_users, max_users and
+    max_day in a tuple
+    """
+
+    if nb_users > 0 and nb_users > max_users:
+        max_users = nb_users
+        max_day = date
+
+    elif nb_users > 0 and nb_users < min_users:
+        min_users = nb_users
+
+    return (min_users, max_users, max_day)
+
+# End of get_min_max_users() function
 
 
 def do_some_stats(result_list):
@@ -193,21 +229,10 @@ def do_some_stats(result_list):
             nb_days = nb_days + 1
             old_date = date
 
-        if state.lower() == 'out':
-            nb_users = nb_users + 1
-            total_use = total_use + 1
+        (nb_users, total_use) = count_users_upon_state(state, nb_users, total_use)
+        (min_users, max_users, max_day) = get_min_max_users(nb_users, min_users, max_users, date, max_day)
 
-        elif state.lower() == 'in':
-            nb_users = nb_users - 1
-
-        if nb_users > 0 and nb_users > max_users:
-            max_users = nb_users
-            max_day = date
-
-        if nb_users > 0 and nb_users < min_users:
-            min_users = nb_users
-
-        # Saving the new values
+        # Saving the new values into the corresponding module
         stats[module] = (max_users, min_users, max_day, nb_users, total_use, nb_days)
 
     return (stats, module_list)
