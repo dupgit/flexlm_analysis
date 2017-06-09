@@ -3,7 +3,7 @@
 #
 #  flexlm_analysis.py : Script to analyse flexlm log files
 #
-#  (C) Copyright 2013 Olivier Delhomme
+#  (C) Copyright 2013i - 2017 Olivier Delhomme
 #  e-mail : olivier.delhomme@free.fr
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,7 @@
 #  along with this program; if not, write to the Free Software Foundation,
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-#import os
-#import sys
-#import getopt
-#import shutil
+
 import argparse
 import re
 import gzip
